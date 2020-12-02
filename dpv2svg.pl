@@ -79,12 +79,17 @@ foreach my $component ( @{ $table->{EComponent} } ) {
 	my $w = $table->{ station_by_id }->{$id}->{SizeX} / 100;
 	my $h = $table->{ station_by_id }->{$id}->{SizeY} / 100;
 
+	# move coordinates to center
+	$x = $x - ( $w / 2 );
+	$y = $y - ( $h / 2 );
+
 	my $r_x = $x + ( $w / 2 );
 	my $r_y = $y + ( $h / 2 );
 
 	my $s = $w / 4;
 	my $cx = $x + $s;
 	my $cy = $y + $s;
+
 print qq{
   <g id="$explain" transform="rotate($angle,$r_x,$r_y)">
 	<rect x="$x" y="$y" width="$w" height="$h" fill="gray" />
