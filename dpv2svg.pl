@@ -3,6 +3,7 @@ use warnings;
 use strict;
 
 use Data::Dump qw(dump);
+use List::Util qw(min);
 
 my $in_table;
 my @t;
@@ -45,6 +46,19 @@ print qq{
 my $x = 0    + 10;
 my $y = -100 + 10;
 
+sub cx_cy_s {
+	my ( $x, $y, $w, $h ) = @_;
+
+	my $min = $w;
+	$min = $h if $h < $min;
+
+	my $s = $min / 4;
+	my $cx = $x + $s;
+	my $cy = $y + $s;
+
+	return ( $cx, $cy, $s );
+}
+
 foreach my $station ( @{ $table->{Station} } ) {
 
 	# 160 = 1.6 mm, so 1/100
@@ -53,9 +67,7 @@ foreach my $station ( @{ $table->{Station} } ) {
 
 	my $id = $station->{ID};
 
-	my $s = $w / 4;
-	my $cx = $x + $s;
-	my $cy = $y + $s;
+	my ( $cx, $cy, $s ) = cx_cy_s( $x, $y, $w, $h );
 print qq{
   <g id="station$id">
 	<rect x="$x" y="$y" width="$w" height="$h" fill="gray" />
@@ -86,9 +98,7 @@ foreach my $component ( @{ $table->{EComponent} } ) {
 	my $r_x = $x + ( $w / 2 );
 	my $r_y = $y + ( $h / 2 );
 
-	my $s = $w / 4;
-	my $cx = $x + $s;
-	my $cy = $y + $s;
+	my ( $cx, $cy, $s ) = cx_cy_s( $x, $y, $w, $h );
 
 print qq{
   <g id="$explain" transform="rotate($angle,$r_x,$r_y)">
