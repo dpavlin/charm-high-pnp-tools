@@ -40,7 +40,7 @@ while(<>) {
 warn "# table = ",dump( $table );
 
 # feeder positions
-my $x = 10;
+my $x = 0;
 my $y = 100;
 
 sub cx_cy_s {
@@ -63,10 +63,22 @@ foreach my $station ( @{ $table->{Station} } ) {
 	my $h = $station->{SizeY} / 100;
 
 	my $id = $station->{ID};
+	my $note = $station->{Note};
+
+	if ( $y == 100 && $id >= 36 ) { # top feeders - FIXME rotate 180?
+		$y = 110;
+		$x = 0;
+	}
+
+	if ( $y == 110 && $id >= 64 ) { # custom feeders - FIXME reset rotation to same as on board
+		$x = 0;
+		$y = 120 ;
+	}
 
 	my ( $cx, $cy, $s ) = cx_cy_s( $x, $y, $w, $h );
 push @svg, qq{
   <g id="station$id">
+  	<title id="t-$id">$id $note</title>
 	<rect x="$x" y="$y" width="$w" height="$h" fill="blue" />
 	<circle cx="$cx" cy="$cy" r="$s" fill="red" />
   </g>
@@ -85,6 +97,7 @@ foreach my $component ( @{ $table->{EComponent} } ) {
 	my $angle = $component->{Angle};
 	my $id = $component->{'STNo.'};
 	my $explain = $component->{Explain};
+	my $note = $component->{Note};
 
 	my $w = $table->{ station_by_id }->{$id}->{SizeX} / 100;
 	my $h = $table->{ station_by_id }->{$id}->{SizeY} / 100;
@@ -102,6 +115,7 @@ foreach my $component ( @{ $table->{EComponent} } ) {
 
 push @svg, qq{
   <g id="$explain" transform="rotate($angle,$r_x,$r_y)">
+  	<title id="t-$explain">$explain $note $angle</title>
 	<rect x="$x" y="$y" width="$w" height="$h" fill="gray" />
 	<circle cx="$cx" cy="$cy" r="$s" fill="red" />
   </g>
@@ -121,9 +135,11 @@ my $y = $bbox->{min}->{y};
 my $w = $bbox->{max}->{x} - $bbox->{min}->{x};
 my $h = $bbox->{max}->{y} - $bbox->{min}->{y};
 
-push @svg, qq{
+# put bbox as first element, and draw on top of it, so that title works
+unshift @svg, qq{
 <!-- bbox = },dump($bbox), qq{ -->
-<rect x="$x" y="$y" width="$w" height="$h" style="fill:blue;opacity:0.2" />
+<rect x="$x" y="$y" width="$w" height="$h"
+	style="fill:white;stroke:blue;stroke-width:0.1;opacity:1" />
 };
 
 warn "# bbox = ",dump($bbox);
@@ -131,7 +147,9 @@ warn "# bbox = ",dump($bbox);
 # 250 80
 #<svg viewBox="0 -100 200 150" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 print qq{
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg
+ viewBox="0 0 200 150"
+ xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 };
 
 print @svg;
