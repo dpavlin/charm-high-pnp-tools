@@ -9,6 +9,8 @@ my $in_table;
 my @t;
 my $table;
 
+my @svg;
+
 while(<>) {
 	chomp;
 	s/\r$//;
@@ -37,14 +39,9 @@ while(<>) {
 
 warn "# table = ",dump( $table );
 
-
-# 250 80
-print qq{
-<svg viewBox="-40 -100 300 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-};
-
-my $x = 0    + 10;
-my $y = -100 + 10;
+# feeder positions
+my $x = 10;
+my $y = 10;
 
 sub cx_cy_s {
 	my ( $x, $y, $w, $h ) = @_;
@@ -68,7 +65,7 @@ foreach my $station ( @{ $table->{Station} } ) {
 	my $id = $station->{ID};
 
 	my ( $cx, $cy, $s ) = cx_cy_s( $x, $y, $w, $h );
-print qq{
+push @svg, qq{
   <g id="station$id">
 	<rect x="$x" y="$y" width="$w" height="$h" fill="gray" />
 	<circle cx="$cx" cy="$cy" r="$s" fill="red" />
@@ -100,7 +97,7 @@ foreach my $component ( @{ $table->{EComponent} } ) {
 
 	my ( $cx, $cy, $s ) = cx_cy_s( $x, $y, $w, $h );
 
-print qq{
+push @svg, qq{
   <g id="$explain" transform="rotate($angle,$r_x,$r_y)">
 	<rect x="$x" y="$y" width="$w" height="$h" fill="gray" />
 	<circle cx="$cx" cy="$cy" r="$s" fill="red" />
@@ -117,17 +114,25 @@ print qq{
 my $w = $bbox->{max}->{x} - $bbox->{min}->{x};
 my $h = $bbox->{max}->{y} - $bbox->{min}->{y};
 
-print qq{
+push @svg, qq{
 <!-- bbox = },dump($bbox), qq{ -->
 <rect x="$bbox->{min}->{x}" y="$bbox->{min}->{y}" width="$w" height="$h"
   style="fill:blue;opacity:0.2" />
 };
 
+warn "# bbox = ",dump($bbox);
+
+# 250 80
+print qq{
+<svg viewBox="0 -100 200 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+};
+
+print @svg;
+
 print qq{
 </svg>
 };
 
-warn "# bbox = ",dump($bbox);
 
 __END__
   <use xlink:href="#test" x="0" y="10" transform="rotate(15,5,15)" stroke="blue"/>
