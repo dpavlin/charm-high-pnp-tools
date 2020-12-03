@@ -41,7 +41,7 @@ warn "# table = ",dump( $table );
 
 # feeder positions
 my $x = 10;
-my $y = 10;
+my $y = 100;
 
 sub cx_cy_s {
 	my ( $x, $y, $w, $h ) = @_;
@@ -67,7 +67,7 @@ foreach my $station ( @{ $table->{Station} } ) {
 	my ( $cx, $cy, $s ) = cx_cy_s( $x, $y, $w, $h );
 push @svg, qq{
   <g id="station$id">
-	<rect x="$x" y="$y" width="$w" height="$h" fill="gray" />
+	<rect x="$x" y="$y" width="$w" height="$h" fill="blue" />
 	<circle cx="$cx" cy="$cy" r="$s" fill="red" />
   </g>
 };
@@ -81,12 +81,15 @@ foreach my $component ( @{ $table->{EComponent} } ) {
 
 	my $x = $component->{DeltX};
 	my $y = $component->{DeltY};
+	
 	my $angle = $component->{Angle};
 	my $id = $component->{'STNo.'};
 	my $explain = $component->{Explain};
 
 	my $w = $table->{ station_by_id }->{$id}->{SizeX} / 100;
 	my $h = $table->{ station_by_id }->{$id}->{SizeY} / 100;
+
+	$y = 100 - $y;	# flip y axes
 
 	# move coordinates to center
 	$x = $x - ( $w / 2 );
@@ -105,26 +108,30 @@ push @svg, qq{
 };
 
 	$bbox->{max}->{x} = $x + $w if $x + $w > $bbox->{max}->{x};
-	$bbox->{max}->{y} = $y + $y if $y + $h > $bbox->{max}->{y};
-	$bbox->{min}->{x} = $x if $x < $bbox->{min}->{x};
-	$bbox->{min}->{y} = $y if $y < $bbox->{min}->{y};
+	$bbox->{max}->{y} = $y + $h if $y + $h > $bbox->{max}->{y};
+	$bbox->{min}->{x} = $x - $w if $x - $w < $bbox->{min}->{x};
+	$bbox->{min}->{y} = $y - $h if $y - $h < $bbox->{min}->{y};
+
 
 }
+
+my $x = $bbox->{min}->{x};
+my $y = $bbox->{min}->{y};
 
 my $w = $bbox->{max}->{x} - $bbox->{min}->{x};
 my $h = $bbox->{max}->{y} - $bbox->{min}->{y};
 
 push @svg, qq{
 <!-- bbox = },dump($bbox), qq{ -->
-<rect x="$bbox->{min}->{x}" y="$bbox->{min}->{y}" width="$w" height="$h"
-  style="fill:blue;opacity:0.2" />
+<rect x="$x" y="$y" width="$w" height="$h" style="fill:blue;opacity:0.2" />
 };
 
 warn "# bbox = ",dump($bbox);
 
 # 250 80
+#<svg viewBox="0 -100 200 150" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 print qq{
-<svg viewBox="0 -100 200 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 };
 
 print @svg;
