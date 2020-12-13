@@ -41,7 +41,7 @@ warn "# table = ",dump( $table );
 
 # feeder positions
 my $x = 0;
-my $y = 100;
+my $y = 10;
 
 sub cx_cy_s {
 	my ( $x, $y, $w, $h ) = @_;
@@ -65,14 +65,14 @@ foreach my $station ( @{ $table->{Station} } ) {
 	my $id = $station->{ID};
 	my $note = $station->{Note};
 
-	if ( $y == 100 && $id >= 36 ) { # top feeders - FIXME rotate 180?
-		$y = 110;
+	if ( $y == 10 && $id >= 36 ) { # top feeders - FIXME rotate 180?
+		$y = 20;
 		$x = 0;
 	}
 
-	if ( $y == 110 && $id >= 64 ) { # custom feeders - FIXME reset rotation to same as on board
+	if ( $y == 20 && $id >= 64 ) { # custom feeders - FIXME reset rotation to same as on board
 		$x = 0;
-		$y = 120 ;
+		$y = 30 ;
 	}
 
 	my ( $cx, $cy, $s ) = cx_cy_s( $x, $y, $w, $h );
@@ -102,7 +102,7 @@ foreach my $component ( @{ $table->{EComponent} } ) {
 	my $w = $table->{ station_by_id }->{$id}->{SizeX} / 100;
 	my $h = $table->{ station_by_id }->{$id}->{SizeY} / 100;
 
-	$y = 100 - $y;	# flip y axes
+	$y = 0 - $y;	# flip y axes
 
 	# move coordinates to center
 	$x = $x - ( $w / 2 );
@@ -148,7 +148,7 @@ warn "# bbox = ",dump($bbox);
 #<svg viewBox="0 -100 200 150" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 print qq{
 <svg
- viewBox="0 0 200 150"
+ viewBox="0 -100 40 250"
  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 };
 
