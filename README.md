@@ -15,3 +15,12 @@ Use as filter:
 
 It's recommeded to open svg files in browser since components
 and feeders have title which is visible on hover.
+
+## rotate dpv by 90 degrees
+
+This is useful if you don't have enough space to grip board
+on top and bottom edges, but you do on left and right
+
+```shell
+./dpv-rotate.pl 20201203-112129-ulx3s-top.dpv > top-r.dpv
+```
