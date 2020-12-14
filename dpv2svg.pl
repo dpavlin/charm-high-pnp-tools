@@ -20,7 +20,8 @@ while(<>) {
 		$in_table = $t[0];
 		#warn "## t=",dump( \@t );
 	} elsif ( m/^$/ ) {
-		$in_table = undef;
+		# empty lines can be after Table and before data
+		#$in_table = undef;
 	} elsif ( $in_table ) {
 		my @v = split(/,/,$_);
 		#warn "## v=",dump( \@v );
